@@ -1,18 +1,19 @@
 Remember-R
 ================
 
-*Remember-R*
-
 Mini taller para recordar manipulación de datos en R y reforzar buenas
 prácticas de trabajo.
 
 :metal:
 
-\#Antes de comenzar:
+### Antes de comenzar:
 
-Instalar [R](https://www.r-project.org). Se recomienda utilizar
-[R-Studio](https://posit.co/download/rstudio-desktop/). En *R* instalar
-los siguientes paquetes:
+Instalar [R](https://www.r-project.org).
+
+Se recomienda utilizar
+[R-Studio](https://posit.co/download/rstudio-desktop/).
+
+En *R* instalar los siguientes paquetes:
 
 -   [tidyverse](https://www.tidyverse.org/packages/)
 
