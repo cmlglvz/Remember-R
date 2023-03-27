@@ -15,22 +15,38 @@ Mini taller para recordar manipulación de datos en R y reforzar buenas práctic
 *Antes de comenzar*
 Instalar [R](https://www.r-project.org).
 Se recomienda utilizar [R-Studio](https://posit.co/download/rstudio-desktop/).
-En *R* instalar los siguientes paquetes:
-- [tidyverse](https://www.tidyverse.org/packages/)
-- [vegan](https://github.com/vegandevs/vegan)
+En _R_ instalar los siguientes paquetes:
+
+* [tidyverse](https://www.tidyverse.org/packages/)
+
+* [vegan](https://github.com/vegandevs/vegan)
+
 - [ggvegan](https://github.com/gavinsimpson/ggvegan)
+
 - clustsig*
+
 - [Biostrings](https://bioconductor.org/packages/release/bioc/html/Biostrings.html)
+
 - [DECIPHER](http://www2.decipher.codes)
+
 - [phyloseq](https://www.bioconductor.org/packages/release/bioc/html/phyloseq.html)
+
 - [ape](http://ape-package.ird.fr)
+
 - [dendextend](https://cran.r-project.org/web/packages/dendextend/vignettes/dendextend.html)
+
 - [heatmaply](https://cran.r-project.org/web/packages/heatmaply/vignettes/heatmaply.html)
+
 - [viridis](https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html)
+
 - [htmlwidgets](https://github.com/ramnathv/htmlwidgets)
+
 - [taxa](https://github.com/ropensci/taxa)
+
 - [metacoder](https://grunwaldlab.github.io/metacoder_documentation/)
+
 - [doParallel](https://github.com/RevolutionAnalytics/doparallel)
+
 - [hrbrthemes](https://github.com/hrbrmstr/hrbrthemes)
   
 
