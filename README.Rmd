@@ -12,7 +12,8 @@ Mini taller para recordar manipulación de datos en R y reforzar buenas práctic
 
 :metal:
 
-*Antes de comenzar*
+#Antes de comenzar:
+
 Instalar [R](https://www.r-project.org).
 Se recomienda utilizar [R-Studio](https://posit.co/download/rstudio-desktop/).
 En _R_ instalar los siguientes paquetes:

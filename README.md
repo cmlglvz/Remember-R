@@ -8,8 +8,9 @@ prácticas de trabajo.
 
 :metal:
 
-*Antes de comenzar* Instalar [R](https://www.r-project.org). Se
-recomienda utilizar
+\#Antes de comenzar:
+
+Instalar [R](https://www.r-project.org). Se recomienda utilizar
 [R-Studio](https://posit.co/download/rstudio-desktop/). En *R* instalar
 los siguientes paquetes:
 
