@@ -1,0 +1,13 @@
+---
+title: "README"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+*Remember-R*
+
+Mini taller para recordar manipulación de datos en R y reforzar buenas prácticas de trabajo.
+
+:metal: :godmode:
