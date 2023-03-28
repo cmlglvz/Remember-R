@@ -1,0 +1,92 @@
+---
+title: "Remember-R"
+author: "Camilo Gálvez A."
+output: html_document
+---
+
+# Libraries
+```{r Libraries, echo=TRUE,message=FALSE,warning=FALSE,include=TRUE}
+library(tidyverse)
+library(vegan)
+library(clustsig)
+library(Biostrings)
+library(DECIPHER)
+library(phyloseq)
+library(ape)
+library(dendextend)
+library(heatmaply)
+library(viridis)
+library(htmlwidgets)
+library(taxa)
+library(metacoder)
+library(ggvegan)
+library(doParallel)
+library(hrbrthemes)
+```
+
+
+# Data
+```{r Data, echo=TRUE,message=FALSE,warning=FALSE,include=TRUE}
+data <- read.csv("https://raw.githubusercontent.com/cmlglvz/Remember-R/main/Data/abundancia_taxonomia.csv", header = TRUE, sep = ";", skip = 0, row.names = 1)
+environ <- read.csv("https://raw.githubusercontent.com/cmlglvz/Remember-R/main/Data/environment.csv", header = TRUE, sep = ";", dec = ".", skip = 0, row.names = 1)
+```
+
+
+# Abundance: Raw, relative and transformed
+```{r Abundance, echo=TRUE,message=FALSE,warning=FALSE,include=TRUE}
+short <- dplyr::filter(data,Total >= 20)
+abund <- short[,c(3:36)] %>% t() %>% as.data.frame()
+colnames(abund) <- short$ASV
+
+#Benjamin Glasner
+rltv.Otu.Table <- function(x) {
+  x.Data.rltv <- NULL
+  for (i in 1:dim(x)[1]) {
+    x.Data.rltv <- rbind(x.Data.rltv, x[i,]/apply(x, 1, function(x) sum(x))[i])
+  }
+  rownames(x.Data.rltv) <- rownames(x)
+  invisible(x.Data.rltv)
+}
+
+rltv <- rltv.Otu.Table(abund) %>% as.data.frame()
+rowSums(rltv)
+
+vrltv <- vegan::decostand(abund, method = "total")
+rowSums(vrltv)
+
+hell <- vegan::decostand(abund, method = "hellinger")
+rowSums(hell)
+
+#vegan::decostand(vrltv, method = "hellinger") %>% rowSums()
+```
+
+
+# SIMPROF
+The similarity profile routine ([SIMPROF](https://sites.google.com/site/mb3gustame/hypothesis-tests/simprof); Clarke et al. 2008) is a hypothesis test which may be used during exploratory analyses. SIMPROF tests data, with no required a priori groupings (in contrast to e.g. ANOSIM), against the null hypothesis of "absence of structure". 
+```{r SIMPROF, echo=TRUE,message=FALSE,warning=FALSE,include=TRUE}
+bray <- vegan::vegdist(hell, method = "bray", diag = TRUE) %>% as.matrix() %>% as.data.frame()
+smprf <- clustsig::simprof(data = bray, method.cluster = "average", silent = FALSE, increment = 1000, undef.zero = TRUE)
+simprof.plot(smprf)
+
+#ver si esto es util
+hellprof <- add_column(hell, 
+                       .before = hell[,1], 
+                       Site = c(rep("Site.1", 12),
+                                rep("Site.3", 12), 
+                                rep("Site.5", 10)
+                                ), 
+                       .name_repair = "minimal")
+hellprof$Site <- factor(hellprof$Site, levels = unique(hellprof$Site))
+```
+
+
+# Sequences analysis
+```{r FASTA, echo=TRUE,message=FALSE,warning=FALSE,include=TRUE}
+#nms <- paste(data$ASV, data$Species, sep = "_")
+fasta <- data.frame(names = short$ASV, Sequences = all_of(short$Seq))
+seqRFLP::dataframe2fas(fasta, "X:/Documents/Proyectos_R/Remember-R/Products/asv.fasta")
+#Less than 1000 seqs = muscle.exe -align asv.fasta -output alignment.fasta
+#More than 1000 seqs = muscle.exe -super5 asv.fasta -output alignment.afa
+#it took 20 minutes in this case
+```
+
