@@ -90,3 +90,101 @@ seqRFLP::dataframe2fas(fasta, "X:/Documents/Proyectos_R/Remember-R/Products/asv.
 #it took 20 minutes in this case
 ```
 
+
+# Alignment dendrogram
+```{r alignment, echo=TRUE,message=FALSE,warning=FALSE,include=TRUE}
+multialign <- "/Documents/Proyectos_R/Remember-R/Products/alignment.fasta"
+dbConn <- dbConnect(SQLite(), ":memory:")
+Seqs2DB(multialign, type = "FASTA", dbFile = dbConn, "")
+x <- dbGetQuery(dbConn, "select description from Seqs")$description
+Add2DB(myData = data.frame(identifier = x, stringsAsFactors = FALSE), dbConn)
+consensus <- IdConsensus(dbConn, threshold = 0.3, minInformation = 0.1)
+distance.matrix <- DistanceMatrix(consensus, correction = "Jukes-Cantor", processors = NULL, verbose = TRUE)
+dendrogram <- IdClusters(distance.matrix, method = "ML", showPlot = TRUE, type = "dendrogram", myXStringSet = consensus, processors = NULL, verbose = TRUE)
+#Selected model was:TN93 + G4, it took 144.29 secs
+dbDisconnect(dbConn)
+```
+
+
+# Cluster manipulation
+```{r cluster, echo=TRUE,message=FALSE,warning=FALSE,include=TRUE}
+clust <- as.dendrogram(as.hclust(dendrogram)) %>% dendextend::set("branches_lwd", 0.3) %>% dendextend::ladderize(right = TRUE)
+plot(clust)
+sclust <- smprf$hclust
+sclustS <- as.dendrogram(sclust) %>% set("branches_lwd", 0.3) %>% ladderize(right = FALSE)
+plot(sclustS)
+```
+
+
+# Heatmap
+```{r heatmap, echo=TRUE,message=FALSE,warning=FALSE,include=TRUE}
+maligned <- readDNAMultipleAlignment(multialign, format = "fasta")
+mstring <- as(maligned, "DNAStringSet")
+DECIPHER::BrowseSeqs(mstring, htmlFile = "/Documents/Proyectos_R/Remember-R/Products/multiple_alignment.html")
+
+#Check if ID from .fasta and abundance table match
+print(all(colnames(hell)%in%gtools::mixedsort(as.vector(rownames(as.matrix(maligned))), decreasing = FALSE)))
+#If TRUE = they match
+
+heatmap <- heatmaply(normalize(hell), 
+                     Colv = clust, 
+                     Rowv = sclustS, 
+                     main = "Here goes the title", 
+                     color = viridis(n = 256, 
+                                     alpha = 1, 
+                                     begin = 0, 
+                                     end = 1, 
+                                     option = "rocket")
+                     )
+htmlwidgets::saveWidget(heatmap, file = "/Documents/Proyectos_R/Remember-R/Products/heatmap.html")
+
+wos.heat <- heatmaply(normalize(hell), 
+                      Colv = clust, 
+                      Rowv = NA, 
+                      main = "Heatmap but without SIMPROF", 
+                      color = viridis(n = 256, 
+                                      alpha = 0.7, 
+                                      begin = 0, 
+                                      end = 1, 
+                                      option = "mako")
+                      )
+
+saveWidget(wos.heat, file = "/Documents/Proyectos_R/Remember-R/Products/wos_heat.html")
+```
+
+
+# Using phyloseq
+This next "chapter" is based on Daniel Vaulot's online tutorial for phyloseq
+
+## Preparation
+```{r preparing, echo=TRUE,message=FALSE,warning=FALSE,include=TRUE}
+#Let's extract our taxa data frame
+taxa <- short[,c(1,2,41:48)]
+rownames(taxa) <- taxa$ASV
+rownames(environ) <- environ$Samples
+
+#Phyloseq DOES NOT LIKE dataframes (most of the times), USE MATRICES
+taxa <- as.matrix(taxa)
+lmabun <- t(abund) %>% as.data.frame()
+lmabun <- add_column(lmabun, Total = rowSums(lmabun[c(1:34)])) %>% as.matrix()
+```
+
+
+## Phyloseq object
+```{r phyloseq, echo=TRUE,message=FALSE,warning=FALSE,include=TRUE}
+OTU <- otu_table(lmabun, taxa_are_rows = TRUE)
+TAXA <- tax_table(taxa)
+SAMPLE <- sample_data(environ)
+PHYLUM <- ape::as.phylo(clust)
+
+remember <- phyloseq(OTU, TAXA, SAMPLE, PHYLUM)
+
+```
+
+
+## Phyloseq manipulation and explorarion
+```{r explorer, echo=TRUE,message=FALSE,warning=FALSE,include=TRUE}
+plot_richness(remember, color = "Date", x = "Site")
+plot_bar(remember, fill = "Division")
+```
+
