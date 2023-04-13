@@ -188,3 +188,4 @@ plot_richness(remember, color = "Date", x = "Site")
 plot_bar(remember, fill = "Division")
 ```
 
+Agregar un plot de abundancia relativa
