@@ -188,4 +188,41 @@ plot_richness(remember, color = "Date", x = "Site")
 plot_bar(remember, fill = "Division")
 ```
 
+
+# Ploting relative abundance
+One of the simplest ways to visualize data is to use ggplot, but in order to do so it is important to understand how and why we need to manipulate data formats. In this instance we are going to plot the relavite abundance of our data using a legacy labmicmar function and the transforming the object to get the wanted result.
+```{r plot, echo=TRUE,warning=FALSE,message=FALSE,include=TRUE}
+source("/Documents/Proyectos_R/Remember-R/Code/taxa_sum.R")
+clase <- taxa.sum(abund,taxa,6) %>% as.data.frame()
+rltv.class <- clase[,-19] %>% rltv.Otu.Table() %>% as.data.frame()
+#rowSums(rltv.class)
+rltv.class <- add_column(rltv.class, Sample = rownames(rltv.class), .before = "Mamiellophyceae", .name_repair = "minimal")
+rltv.class$Sample <- factor(rltv.class$Sample, levels = rltv.class$Sample)
+long <- reshape2::melt(rltv.class, id.vars = "Sample", variable.name = "Class")
+grapho <- ggplot(long, aes(x=Sample,
+                           y=value,
+                           fill=Class)) + 
+  geom_bar(position = "fill", stat = "identity") + 
+  labs(x="Sampled sites", 
+       y="Relative reads abundance",
+       title = "Relative reads abundance at class level for analyzed ASV") + 
+  scale_fill_viridis(discrete = TRUE, end = 0.89, direction = -1, option = "viridis") + 
+  hrbrthemes::theme_ipsum(base_size = 22, axis_col = "#000000", axis_title_size = 30, plot_title_size = 30) + 
+  theme(legend.position = "bottom", legend.direction = "horizontal")
+legend <- cowplot::get_legend(grapho)
+grapho <- grapho + theme(legend.position = "none")
+ggsave(plot = grapho, 
+       filename = "Figura_1.png",
+       path = "/Documents/Proyectos_R/Remember-R/Products/", 
+       width = 31, 
+       height = 19, 
+       dpi = 600)
+ggsave(ggpubr::as_ggplot(legend), 
+       filename = "Figura_1_legend.tiff", 
+       path = "/Documents/Proyectos_R/Remember-R/Products/", 
+       width = 21,
+       height = 10,
+       dpi = 900)
+```
+
 Agregar un plot de abundancia relativa
