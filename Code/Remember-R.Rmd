@@ -198,9 +198,9 @@ rltv.class <- clase[,-19] %>% rltv.Otu.Table() %>% as.data.frame()
 #rowSums(rltv.class)
 rltv.class <- add_column(rltv.class, Sample = rownames(rltv.class), .before = "Mamiellophyceae", .name_repair = "minimal")
 rltv.class$Sample <- factor(rltv.class$Sample, levels = rltv.class$Sample)
-long <- reshape2::melt(rltv.class, id.vars = "Sample", variable.name = "Class")
+long <- gather(rltv.class, "Class", "Abundance", 2:20)
 grapho <- ggplot(long, aes(x=Sample,
-                           y=value,
+                           y=Abundance,
                            fill=Class)) + 
   geom_bar(position = "fill", stat = "identity") + 
   labs(x="Sampled sites", 
