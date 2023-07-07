@@ -17,7 +17,6 @@ dis.indx <- vegan::vegdist(x = hell, method = "bray", diag = TRUE) #save file
 
 #NMDS
 set.seed(19910420) #reproducible results
-nmds <- metaMDS(comm = hell, distance = "bray", k = 2, trymax = 100, autotransform = FALSE)nmds <- metaMDS(comm = hell, distance = "bray", k = 2, trymax = 100, autotransform = FALSE)
 nmds <- vegan::metaMDS(comm = hell, #or dissimilarity indices
                        distance = "bray", 
                        k = 2, 
@@ -29,4 +28,6 @@ scrs <- vegan::scores(nmds)
 nmds$points
 plot(nmds)
 
-#Plot as you  prefer
+#Plot as you prefer
+#Cruces = seqs
+#Circles = sites
